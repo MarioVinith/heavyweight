@@ -284,3 +284,84 @@ code {
   letter-spacing: 0.14em;
   padding: 6px 10px;
 }
+
+/* ---------- calendar ---------- */
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.cal-title {
+  font-size: 1.45rem;
+  background: none;
+  border: 0;
+  color: var(--text);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.cal-nav {
+  padding: 6px 14px;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.cal-dow {
+  text-align: center;
+  padding-bottom: 4px;
+}
+
+.cal-day {
+  aspect-ratio: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--font-label);
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.cal-day.logged {
+  border-color: var(--gold-dim);
+  background: #1e1811;
+}
+
+.cal-day.today {
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
+}
+
+.cal-day.future { opacity: 0.45; }
+
+.cal-dot {
+  position: absolute;
+  bottom: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.cal-pad { aspect-ratio: 1; }
+
+.cal-tally {
+  text-align: center;
+  margin-top: 16px;
+}

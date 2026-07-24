@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import Shell from './components/Shell'
 import Calendar from './screens/Calendar'
+import Day from './screens/Day'
 import Login from './screens/Login'
 import Progress from './screens/Progress'
 import Setup from './screens/Setup'
@@ -45,6 +46,7 @@ export default function App() {
     <Routes>
       <Route element={<Shell />}>
         <Route path="/" element={<Calendar />} />
+        <Route path="/day/:date" element={<Day />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/setup" element={<Setup />} />
       </Route>
