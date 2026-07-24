@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { useStore } from '../store/Store'
 
 const TABS = [
   { to: '/', label: 'Calendar' },
@@ -7,6 +8,7 @@ const TABS = [
 ]
 
 export default function Shell() {
+  const { offline } = useStore()
   return (
     <div className="shell">
       <header className="topbar">
@@ -14,6 +16,11 @@ export default function Shell() {
           HEAVY<span className="gold">WEIGHT</span>
         </span>
       </header>
+      {offline && (
+        <div className="offline-banner">
+          OFFLINE — SHOWING LAST SYNCED DATA
+        </div>
+      )}
       <main className="screen">
         <Outlet />
       </main>

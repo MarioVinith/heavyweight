@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import Shell from './components/Shell'
 import Calendar from './screens/Calendar'
+import Login from './screens/Login'
 import Progress from './screens/Progress'
 import Setup from './screens/Setup'
 import { useStore } from './store/Store'
@@ -32,24 +33,12 @@ function NotConfigured() {
   )
 }
 
-// Replaced by the real magic-link screen in Task 4.
-function LoginPlaceholder() {
-  return (
-    <div className="center-wrap">
-      <div className="card center-card">
-        <h1 className="display h1">LOGIN</h1>
-        <p className="muted">Coming in the next round.</p>
-      </div>
-    </div>
-  )
-}
-
 export default function App() {
   const { configured, authReady, session, dataReady } = useStore()
 
   if (!configured) return <NotConfigured />
   if (!authReady) return <Splash />
-  if (!session) return <LoginPlaceholder />
+  if (!session) return <Login />
   if (!dataReady) return <Splash />
 
   return (

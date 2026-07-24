@@ -10,10 +10,18 @@ import {
 } from 'react'
 import * as api from '../lib/api'
 import type { Exercise, Template, TemplateItem } from '../lib/api'
+import { demoData } from '../lib/demo'
 import type { Workout } from '../lib/stats'
 import { supabase } from '../lib/supabase'
 
-const CACHE_KEY = 'hw-cache-v1'
+/** Dev-only: VITE_DEMO=1 boots the app with fake local data, no backend. */
+const DEMO = import.meta.env.VITE_DEMO === '1'
+
+const CACHE_KEY = DEMO ? 'hw-cache-demo' : 'hw-cache-v1'
+
+const DEMO_SESSION = {
+  user: { email: 'demo@heavyweight.local' },
+} as unknown as Session
 
 type Data = api.AllData
 
@@ -60,15 +68,15 @@ type StoreValue = {
 const StoreContext = createContext<StoreValue | null>(null)
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const configured = supabase !== null
-  const [session, setSession] = useState<Session | null>(null)
-  const [authReady, setAuthReady] = useState(!configured)
+  const configured = DEMO || supabase !== null
+  const [session, setSession] = useState<Session | null>(DEMO ? DEMO_SESSION : null)
+  const [authReady, setAuthReady] = useState(DEMO || !configured)
   const [dataReady, setDataReady] = useState(false)
   const [offline, setOffline] = useState(false)
   const [data, setData] = useState<Data>(EMPTY)
 
   useEffect(() => {
-    if (!supabase) return
+    if (DEMO || !supabase) return
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s)
       setAuthReady(true)
@@ -89,6 +97,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const reload = useCallback(async () => {
+    if (DEMO) {
+      setData(demoData())
+      setOffline(false)
+      setDataReady(true)
+      return
+    }
     try {
       let all = await api.fetchAll()
       if (all.exercises.length === 0) {
@@ -133,7 +147,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         (e) => e.name.toLowerCase() === trimmed.toLowerCase(),
       )
       if (existing) return existing // canonical names: never create a near-duplicate
-      const created = await api.createExercise(trimmed)
+      const created = DEMO
+        ? { id: crypto.randomUUID(), name: trimmed }
+        : await api.createExercise(trimmed)
       apply((d) => ({
         ...d,
         exercises: [...d.exercises, created].sort((a, b) =>
@@ -147,7 +163,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const renameExercise = useCallback(
     async (id: string, name: string) => {
-      await api.renameExercise(id, name)
+      if (!DEMO) await api.renameExercise(id, name)
       apply((d) => ({
         ...d,
         exercises: d.exercises
@@ -168,7 +184,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         t.items.some((i) => i.exercise_id === id),
       )
       if (inTemplates) return 'This exercise is used in a template. Remove it there first.'
-      await api.deleteExercise(id)
+      if (!DEMO) await api.deleteExercise(id)
       apply((d) => ({ ...d, exercises: d.exercises.filter((e) => e.id !== id) }))
       return null
     },
@@ -177,7 +193,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const saveTemplate = useCallback(
     async (t: { id?: string; name: string; items: TemplateItem[] }) => {
-      const saved = await api.saveTemplate(t)
+      const saved = DEMO
+        ? { id: t.id ?? crypto.randomUUID(), name: t.name, items: t.items }
+        : await api.saveTemplate(t)
       apply((d) => ({
         ...d,
         templates: [...d.templates.filter((x) => x.id !== saved.id), saved].sort(
@@ -190,7 +208,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const removeTemplate = useCallback(
     async (id: string) => {
-      await api.deleteTemplate(id)
+      if (!DEMO) await api.deleteTemplate(id)
       apply((d) => ({ ...d, templates: d.templates.filter((t) => t.id !== id) }))
     },
     [apply],
@@ -198,7 +216,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const saveWorkout = useCallback(
     async (w: Workout): Promise<Workout> => {
-      const saved = await api.saveWorkout(w)
+      const saved = DEMO ? { ...w, id: w.id ?? crypto.randomUUID() } : await api.saveWorkout(w)
       apply((d) => ({
         ...d,
         workouts: [
@@ -213,13 +231,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const removeWorkout = useCallback(
     async (id: string) => {
-      await api.deleteWorkout(id)
+      if (!DEMO) await api.deleteWorkout(id)
       apply((d) => ({ ...d, workouts: d.workouts.filter((w) => w.id !== id) }))
     },
     [apply],
   )
 
   const signInWithEmail = useCallback(async (email: string) => {
+    if (DEMO) return
     if (!supabase) throw new Error('Supabase is not configured')
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -229,7 +248,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signOut = useCallback(async () => {
-    if (!supabase) return
+    if (DEMO || !supabase) return
     await supabase.auth.signOut()
     localStorage.removeItem(CACHE_KEY)
   }, [])
