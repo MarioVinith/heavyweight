@@ -503,3 +503,90 @@ code {
   border-color: var(--gold);
   color: var(--gold);
 }
+
+/* ---------- progress ---------- */
+
+.progress-title { margin-bottom: 14px; }
+
+.progress-pick { margin-bottom: 10px; }
+
+.seg {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.seg button {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+
+.seg button.active {
+  background: var(--gold);
+  color: #1a1405;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 6px;
+}
+
+.stat-value { font-size: 1.35rem; }
+
+.chart-wrap { padding: 8px 6px 2px; }
+
+.progress-empty {
+  margin: 0 auto;
+  padding: 26px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pr-wall-title {
+  font-size: 1.25rem;
+  margin: 20px 0 10px;
+}
+
+.pr-wall { padding: 2px 14px; }
+
+.pr-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  font-family: var(--font-label);
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pr-row:last-child { border-bottom: 0; }
+
+.pr-best { font-size: 1.05rem; white-space: nowrap; }
