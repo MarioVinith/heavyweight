@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- HEAVYWEIGHT app icon: gold dumbbell on gym-dark -->
+  <rect width="512" height="512" fill="#0c0a08"/>
+  <!-- subtle ring -->
+  <circle cx="256" cy="256" r="208" fill="none" stroke="#2a231d" stroke-width="10"/>
+  <!-- bar -->
+  <rect x="128" y="238" width="256" height="36" rx="10" fill="#e8b93b"/>
+  <!-- outer plates -->
+  <rect x="92" y="162" width="52" height="188" rx="18" fill="#e8b93b"/>
+  <rect x="368" y="162" width="52" height="188" rx="18" fill="#e8b93b"/>
+  <!-- inner plates -->
+  <rect x="150" y="190" width="34" height="132" rx="12" fill="#a3801f"/>
+  <rect x="328" y="190" width="34" height="132" rx="12" fill="#a3801f"/>
+  <!-- red grip tape center -->
+  <rect x="238" y="238" width="36" height="36" rx="8" fill="#b3202a"/>
+</svg>
