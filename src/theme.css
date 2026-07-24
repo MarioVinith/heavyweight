@@ -220,3 +220,23 @@ select.input { appearance: none; }
 
 .chip-gold { color: var(--gold); border-color: var(--gold-dim); }
 .chip-red { color: #e77; border-color: var(--red-deep); }
+
+/* ---------- full-screen states ---------- */
+
+.center-wrap {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.center-card {
+  max-width: 420px;
+  text-align: center;
+}
+
+code {
+  font-size: 0.85em;
+  color: var(--gold);
+}
