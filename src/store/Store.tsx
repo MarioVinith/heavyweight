@@ -1,4 +1,4 @@
-import type { Session } from '@supabase/supabase-js'
+import type { EmailOtpType, Session } from '@supabase/supabase-js'
 import {
   createContext,
   useCallback,
@@ -63,6 +63,7 @@ type StoreValue = {
   removeWorkout: (id: string) => Promise<void>
   signInWithEmail: (email: string) => Promise<void>
   verifyEmailCode: (email: string, code: string) => Promise<void>
+  verifyMagicLink: (tokenHash: string, type: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -262,6 +263,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (error) throw error
   }, [])
 
+  // Fallback for the installed app when the email template can't carry a
+  // code (template editing is SMTP-locked): the user copies the magic link
+  // out of the email and pastes it in; the URL's token param is a one-time
+  // hash that verifyOtp accepts directly.
+  const verifyMagicLink = useCallback(async (tokenHash: string, type: string) => {
+    if (DEMO) return
+    if (!supabase) throw new Error('Supabase is not configured')
+    const { error } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: type as EmailOtpType,
+    })
+    if (error) throw error
+  }, [])
+
   const signOut = useCallback(async () => {
     if (DEMO || !supabase) return
     await supabase.auth.signOut()
@@ -288,6 +303,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       removeWorkout,
       signInWithEmail,
       verifyEmailCode,
+      verifyMagicLink,
       signOut,
     }),
     [
@@ -307,6 +323,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       removeWorkout,
       signInWithEmail,
       verifyEmailCode,
+      verifyMagicLink,
       signOut,
     ],
   )

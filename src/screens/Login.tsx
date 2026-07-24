@@ -1,8 +1,20 @@
 import { useState, type FormEvent } from 'react'
 import { useStore } from '../store/Store'
 
+/** Extract the one-time token from a pasted Supabase magic link, if any. */
+function parseMagicLink(text: string): { tokenHash: string; type: string } | null {
+  try {
+    const url = new URL(text.trim())
+    const token = url.searchParams.get('token')
+    if (!token) return null
+    return { tokenHash: token, type: url.searchParams.get('type') ?? 'magiclink' }
+  } catch {
+    return null
+  }
+}
+
 export default function Login() {
-  const { signInWithEmail, verifyEmailCode } = useStore()
+  const { signInWithEmail, verifyEmailCode, verifyMagicLink } = useStore()
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [status, setStatus] = useState<
@@ -25,12 +37,23 @@ export default function Login() {
 
   async function onVerify(e: FormEvent) {
     e.preventDefault()
+    const input = code.trim()
     setStatus('verifying')
     try {
-      await verifyEmailCode(email.trim(), code)
+      if (/^\d{6}$/.test(input)) {
+        await verifyEmailCode(email.trim(), input)
+      } else {
+        const link = parseMagicLink(input)
+        if (!link) {
+          throw new Error('not-a-link')
+        }
+        await verifyMagicLink(link.tokenHash, link.type)
+      }
       // success: the auth listener flips the session and unmounts this screen
     } catch {
-      setError('That code didn’t land. Check it and try again — codes expire after a few minutes.')
+      setError(
+        'That didn’t land. Paste the whole copied link (or a 6-digit code), and mind that links expire after a few minutes and work only once.',
+      )
       setStatus('sent')
     }
   }
@@ -51,25 +74,23 @@ export default function Login() {
             <p className="muted">
               In a browser: tap the magic link.
               <br />
-              In the installed app: type the <strong>6-digit code</strong> from
-              the same email below.
+              In the installed app: <strong>long-press the link → Copy Link</strong>,
+              come back, and paste it here (a 6-digit code works too, if your
+              email shows one).
             </p>
             <form onSubmit={onVerify} className="login-form">
               <input
-                className="input code-input"
-                inputMode="numeric"
+                className="input"
                 autoComplete="one-time-code"
-                pattern="[0-9]*"
-                maxLength={6}
-                placeholder="6-digit code"
+                placeholder="Paste link or 6-digit code"
                 value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                onChange={(e) => setCode(e.target.value)}
               />
               <button
                 className="btn btn-gold btn-block"
-                disabled={code.length !== 6 || status === 'verifying'}
+                disabled={code.trim().length === 0 || status === 'verifying'}
               >
-                {status === 'verifying' ? 'VERIFYING…' : 'VERIFY CODE'}
+                {status === 'verifying' ? 'VERIFYING…' : 'VERIFY'}
               </button>
             </form>
             {error && <p className="error-text">{error}</p>}

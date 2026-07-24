@@ -48,21 +48,22 @@ Everything here is done once. Total time: ~20 minutes. Everything is on free tie
 > Free-tier note: Supabase's built-in email sender allows only a few emails per
 > hour — fine for one person, and you stay signed in for a long time anyway.
 
-## Part D½ — Add the 6-digit code to the login email (needed for the iPhone app)
+## Part D½ — Logging in from the installed iPhone app
 
 iOS home-screen apps can't log in via the emailed link (links always open in
-Safari, and the installed app has its own separate storage). The app therefore
-also accepts a one-time code — but the email template must include it:
+Safari, and the installed app has its own separate storage). Two ways around it:
 
-1. Supabase left sidebar: **Authentication** → **Email Templates** → **Magic Link**.
-2. Add this line to the template body (keep the existing link too):
+**Paste the link (works out of the box):** in the app, request the magic link
+→ open the email in Mail → **long-press the "Log In" link → Copy Link** →
+switch back to the app → paste it into the verify box. The link is one-time
+and expires after a few minutes, so paste it soon after it arrives.
 
-   ```html
-   <p>Or enter this one-time code in the app: <strong>{{ .Token }}</strong></p>
-   ```
-
-3. **Save**. Now every login email carries both the link (for browsers) and the
-   code (for the installed app).
+**Optional upgrade — 6-digit code:** Supabase only lets you edit email
+templates once you configure custom SMTP (Authentication → Emails → SMTP
+settings; a free sender like Resend works). With SMTP set up, add
+`<p>Your one-time code: {{ .Token }}</p>` to the Magic Link template and the
+app's verify box accepts the code directly. Custom SMTP also removes the
+built-in sender's ~2-4 emails/hour rate limit.
 
 ## Part E — Put the code on GitHub (private repo)
 
@@ -94,8 +95,9 @@ also accepts a one-time code — but the email template must include it:
 - **Android (Chrome)**: open the URL → ⋮ menu → **Install app**.
 
 First login **in the installed app**: enter your email → SEND ME THE MAGIC LINK
-→ open the email → type the **6-digit code** into the app (don't tap the link;
-it would open Safari instead). You stay signed in from then on.
+→ open the email in Mail → long-press the link → **Copy Link** → paste it into
+the app's verify box (don't tap the link; it would open Safari instead).
+You stay signed in from then on.
 
 First login **in a normal browser tab**: the magic link works directly.
 
