@@ -62,6 +62,7 @@ type StoreValue = {
   saveWorkout: (w: Workout) => Promise<Workout>
   removeWorkout: (id: string) => Promise<void>
   signInWithEmail: (email: string) => Promise<void>
+  verifyEmailCode: (email: string, code: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -247,6 +248,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (error) throw error
   }, [])
 
+  // iOS home-screen apps can't receive magic-link redirects (links always open
+  // in Safari, and the installed app has isolated storage) — so the login
+  // email also carries a 6-digit code that can be typed straight into the app.
+  const verifyEmailCode = useCallback(async (email: string, code: string) => {
+    if (DEMO) return
+    if (!supabase) throw new Error('Supabase is not configured')
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: code.trim(),
+      type: 'email',
+    })
+    if (error) throw error
+  }, [])
+
   const signOut = useCallback(async () => {
     if (DEMO || !supabase) return
     await supabase.auth.signOut()
@@ -272,6 +287,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       saveWorkout,
       removeWorkout,
       signInWithEmail,
+      verifyEmailCode,
       signOut,
     }),
     [
@@ -290,6 +306,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       saveWorkout,
       removeWorkout,
       signInWithEmail,
+      verifyEmailCode,
       signOut,
     ],
   )

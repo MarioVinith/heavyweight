@@ -48,6 +48,22 @@ Everything here is done once. Total time: ~20 minutes. Everything is on free tie
 > Free-tier note: Supabase's built-in email sender allows only a few emails per
 > hour — fine for one person, and you stay signed in for a long time anyway.
 
+## Part D½ — Add the 6-digit code to the login email (needed for the iPhone app)
+
+iOS home-screen apps can't log in via the emailed link (links always open in
+Safari, and the installed app has its own separate storage). The app therefore
+also accepts a one-time code — but the email template must include it:
+
+1. Supabase left sidebar: **Authentication** → **Email Templates** → **Magic Link**.
+2. Add this line to the template body (keep the existing link too):
+
+   ```html
+   <p>Or enter this one-time code in the app: <strong>{{ .Token }}</strong></p>
+   ```
+
+3. **Save**. Now every login email carries both the link (for browsers) and the
+   code (for the installed app).
+
 ## Part E — Put the code on GitHub (private repo)
 
 1. Go to **https://github.com/new**:
@@ -77,9 +93,14 @@ Everything here is done once. Total time: ~20 minutes. Everything is on free tie
 - **iPhone (Safari)**: open your Netlify URL → Share button → **Add to Home Screen**.
 - **Android (Chrome)**: open the URL → ⋮ menu → **Install app**.
 
-First login: enter your email → tap the magic link in your inbox **on the same
-device** → the app seeds your exercise library and the "Upper 2 – Block 1"
-template automatically. Go lift. 🥊
+First login **in the installed app**: enter your email → SEND ME THE MAGIC LINK
+→ open the email → type the **6-digit code** into the app (don't tap the link;
+it would open Safari instead). You stay signed in from then on.
+
+First login **in a normal browser tab**: the magic link works directly.
+
+Either way, the first-ever login seeds your exercise library and the
+"Upper 2 – Block 1" template automatically. Go lift. 🥊
 
 ---
 

@@ -274,6 +274,12 @@ code {
   margin: 4px 0 0;
 }
 
+.code-input {
+  text-align: center;
+  font-size: 1.3rem;
+  letter-spacing: 0.35em;
+}
+
 .offline-banner {
   background: var(--red-deep);
   color: var(--text);
