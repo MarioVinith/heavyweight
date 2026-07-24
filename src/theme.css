@@ -365,3 +365,141 @@ code {
   text-align: center;
   margin-top: 16px;
 }
+
+/* ---------- day log ---------- */
+
+.day-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.day-title {
+  flex: 1;
+  font-size: 1.5rem;
+}
+
+.day-empty {
+  text-align: center;
+  padding: 26px 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.day-empty-title { font-size: 2rem; }
+
+.ex-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ex-card { gap: 10px; display: flex; flex-direction: column; }
+
+.ex-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ex-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 1.02rem;
+  line-height: 1.25;
+}
+
+.icon-btn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.ex-hints {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.last-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.set-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.set-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 1fr 32px;
+  gap: 8px;
+  align-items: center;
+}
+
+.set-num { white-space: nowrap; }
+
+.set-input { padding: 9px 10px; }
+
+.btn-small {
+  padding: 8px 12px;
+  font-size: 0.75rem;
+}
+
+.add-ex {
+  margin-top: 14px;
+  color: var(--muted);
+}
+
+.save-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  padding: 14px 16px 10px;
+  background: linear-gradient(transparent, var(--bg) 45%);
+  z-index: 15;
+}
+
+.save-btn {
+  max-width: 528px;
+  margin: 0 auto;
+  padding: 15px 16px;
+  font-size: 1rem;
+}
+
+.toast {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(var(--tabbar-h) + 84px);
+  background: var(--red-deep);
+  border: 1px solid var(--red);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 13px 15px;
+  text-align: center;
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  z-index: 30;
+  max-width: 528px;
+  margin: 0 auto;
+}
+
+.toast-gold {
+  background: #241c07;
+  border-color: var(--gold);
+  color: var(--gold);
+}
