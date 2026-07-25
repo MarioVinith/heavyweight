@@ -1,16 +1,26 @@
 import { useState, type FormEvent } from 'react'
 import { useStore } from '../store/Store'
 
-/** Extract the one-time token from a pasted Supabase magic link, if any. */
+/**
+ * Extract the one-time token from a pasted magic link. Tolerates links that
+ * corporate mail security has wrapped/URL-encoded (Outlook SafeLinks etc.).
+ */
 function parseMagicLink(text: string): { tokenHash: string; type: string } | null {
+  const raw = text.trim()
+  const candidates = [raw]
   try {
-    const url = new URL(text.trim())
-    const token = url.searchParams.get('token')
-    if (!token) return null
-    return { tokenHash: token, type: url.searchParams.get('type') ?? 'magiclink' }
+    candidates.push(decodeURIComponent(raw))
   } catch {
-    return null
+    // not decodable — raw candidate is enough
   }
+  for (const c of candidates) {
+    const token = c.match(/[?&]token=([A-Za-z0-9._-]+)/)
+    if (token) {
+      const type = c.match(/[?&]type=([a-z_]+)/)
+      return { tokenHash: token[1], type: type?.[1] ?? 'magiclink' }
+    }
+  }
+  return null
 }
 
 export default function Login() {
@@ -45,14 +55,19 @@ export default function Login() {
       } else {
         const link = parseMagicLink(input)
         if (!link) {
-          throw new Error('not-a-link')
+          setError(
+            'That doesn’t look like a magic link or a 6-digit code. Long-press the “Log In” link in the email, choose Copy Link, and paste the whole thing.',
+          )
+          setStatus('sent')
+          return
         }
         await verifyMagicLink(link.tokenHash, link.type)
       }
       // success: the auth listener flips the session and unmounts this screen
-    } catch {
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : 'unknown error'
       setError(
-        'That didn’t land. Paste the whole copied link (or a 6-digit code), and mind that links expire after a few minutes and work only once.',
+        `Supabase says: “${detail}”. Links are single-use and only the NEWEST email counts — hit Start over, send a fresh one, copy the link without tapping it, and paste it here right away.`,
       )
       setStatus('sent')
     }
